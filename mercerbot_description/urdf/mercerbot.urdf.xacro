@@ -1,0 +1,179 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="mercerbot">
+    <!-- Useful XACRO Variables (Properties) -->
+    <xacro:property name="PI" value="3.14159265359" />
+    <xacro:property name="effort" value="30.0" />
+    <xacro:property name="velocity" value="10.0" />
+
+  <!-- Include Color Parameters -->
+  <xacro:include filename="$(find mercerbot_description)/urdf/xkcd_colors.urdf.xacro" />
+
+  <!-- ========================= -->
+  <!-- Links                     -->
+  <!-- ========================= -->
+  <link name="world"/>
+  <!-- Base -->
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0.015" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.035" length="0.03"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+  </link>
+
+  <link name="base_plate">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.035" length="0.005"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+    <visual>
+    <origin xyz="0.0 0 0.0125" rpy="0 0 0"/>
+    <geometry>
+      <box size="0.01 0.02 0.025"/>
+    </geometry>
+    <material name="red"/>
+    </visual>
+  </link>
+
+  <!-- Shoulder link -->
+  <link name="shoulder_link">
+    <visual>
+      <origin xyz="0 0 0.04" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.02 0.08"/>
+      </geometry>
+      <material name="red" />
+    </visual>
+  </link>
+
+  <!-- Elbow link -->
+  <link name="elbow_link_corrected">
+    <visual>
+      <origin xyz="0 0 0.04" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.02 0.08"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+  </link>
+
+   <!-- Elbow link -->
+  <link name="elbow_link_actual">
+    <visual>
+      <origin xyz=".05 0 0.04" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.02 0.08"/>
+      </geometry>
+      <material name="pink"/>
+    </visual>
+  </link>
+
+   <link name="claw_support">
+      <visual>
+          <origin rpy="0 1.57 0" xyz="0 0 0"/>
+          <geometry>
+              <box size="0.01 0.02 0.03"/>
+          </geometry>
+        <material name="white"/>
+      </visual>
+       
+    </link>
+    <link name="gripper_right">
+          
+          <visual>
+              <origin rpy="0 0 0" xyz="0 0 0"/>
+              <geometry>
+                  <box size="0.005 0.005 0.03"/>
+              </geometry>
+              <material name="red"/>
+          </visual>
+     
+      </link>
+
+      <link name="gripper_left">
+          
+          <visual>
+              <origin rpy="0 0 0" xyz="0 0 0"/>
+              <geometry>
+                  <box size="0.005 0.005 0.03"/>
+              </geometry>
+              <material name="green"/>
+          </visual>
+     
+      </link>
+  <!-- ========================= -->
+  <!-- Joints                   -->
+  <!-- ========================= -->
+
+  <joint name="virtual_joint" type="fixed">
+        <parent link="world"/>
+        <child link="base_link"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint> 
+
+    <joint name ="joint_1" type="revolute">
+        <parent link="base_link"/>
+        <child link = "base_plate"/>
+        <origin xyz="0 0 0.035"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-${PI / 2}" upper="${PI / 2}" 
+               effort="${effort}" velocity="${velocity}"/>
+    </joint>
+
+    <joint name ="joint_2" type="revolute">
+        <parent link="base_plate"/>
+        <child link = "shoulder_link"/>
+        <origin xyz="0 0 0.025"/>
+        <axis xyz="1 0 0"/>
+        <limit lower="-${PI / 2}" upper="${PI / 2}"
+                effort="${effort}" velocity="${velocity}"/>
+    </joint>
+
+    <joint name ="joint_3_corrected" type="revolute">
+        <parent link="shoulder_link"/>
+        <child link = "elbow_link_corrected"/>
+        <origin xyz="0 0 0.08" rpy="${PI/2} 0 0"/>
+        <axis xyz="1 0 0"/>
+        <limit lower="-${PI / 2}" upper="${PI / 2}"
+               effort="${effort}" velocity="${velocity}"/>
+    </joint>
+
+<joint name ="joint_3_actual" type="revolute">
+        <parent link="shoulder_link"/>
+        <child link = "elbow_link_actual"/>
+        <origin xyz="0 0 0.08" rpy="${PI/2} 0 0"/>
+        <axis xyz="1 0 0"/>
+        <limit lower="-${PI / 2}" upper="${PI / 2}"
+               effort="${effort}" velocity="${velocity}"/>
+    </joint>
+
+    <joint name ="joint_claw_support_corrected" type="revolute">
+        <parent link="elbow_link_corrected"/>
+        <child link = "claw_support"/>
+        <origin xyz="0 0.0 0.08"/>
+        <axis xyz="1 0 0"/>
+        <limit lower="-${PI / 2}" upper="${PI / 2}"
+               effort="${effort}" velocity="${velocity}"/>
+    </joint>
+    <joint name ="joint_4" type="revolute">
+          <parent link="claw_support"/>
+          <child link = "gripper_right"/>
+          <origin xyz="-0.0125 -0.005 0.02"/>
+          <axis xyz="0 0 1"/>
+          <limit lower="-${PI / 2}" upper="0.0" 
+                effort="${effort}" velocity="${velocity}"/>
+      </joint>
+      <joint name ="joint_5" type="revolute">
+          <parent link="claw_support"/>
+          <child link = "gripper_left"/>
+          <origin xyz="0.0125 -0.005 0.02"/>
+          <axis xyz="0 0 1"/>
+          <limit lower="-${PI / 2}" upper="0.0" 
+                effort="${effort}" velocity="${velocity}"/>
+      </joint>
+</robot>
