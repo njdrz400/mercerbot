@@ -1,23 +1,17 @@
 import os
+
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
-from launch.substitutions import Command, LaunchConfiguration
-
+from launch.actions import TimerAction
+from launch.substitutions import Command
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 
 
 def generate_launch_description():
-    mercerbot_description_dir = get_package_share_directory("mercerbot_description")
 
-
-
-
-
-
-# 1) Build robot_description from xacro
+    # 1) Build robot_description from xacro
     robot_description = ParameterValue(
         Command(
             [
@@ -40,26 +34,35 @@ def generate_launch_description():
         parameters=[{"robot_description": robot_description}],
         output="screen",
     )
-   
 
+    # 5) Optional GUI + slider control
     joint_state_publisher_gui_node = Node(
-        package="joint_state_publisher_gui",
-        executable="joint_state_publisher_gui",
-       
+         package="joint_state_publisher_gui",
+         executable="joint_state_publisher_gui",
+         #remappings=[
+         #    ("/joint_states", "/joint_commands"),
+         #],
+         output="screen",
+     )
+    rviz_config_file = os.path.join(
+        get_package_share_directory("mercerbot_description"),
+        "rviz",
+        "basic_urdf.rviz",   # or your rviz file name
     )
 
-   
     rviz_node = Node(
         package="rviz2",
         executable="rviz2",
         name="rviz2",
         output="screen",
-        arguments=["-d", os.path.join(mercerbot_description_dir, "rviz", "display.rviz")],
+       
+        arguments=["-d", rviz_config_file],                        # RViz config
     )
+ 
     return LaunchDescription([
-        #robot_description,
-  
+        # NOTE: robot_description is NOT listed here
         robot_state_publisher_node,
-        joint_state_publisher_gui_node,
         rviz_node,
+        #slider_control_node,
+        joint_state_publisher_gui_node,
     ])
