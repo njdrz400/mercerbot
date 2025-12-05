@@ -5,6 +5,10 @@
     <xacro:property name="effort" value="30.0" />
     <xacro:property name="velocity" value="10.0" />
 
+  <!-- Include ros2_control Plugins -->
+    <xacro:include filename="$(find arduinobot_description)/urdf/arduinobot_ros2_control.xacro" />
+ 
+
   <!-- Include Color Parameters -->
   <xacro:include filename="$(find mercerbot_description)/urdf/xkcd_colors.urdf.xacro" />
 
@@ -65,11 +69,11 @@
    <!-- Elbow link -->
   <link name="elbow_link_actual">
     <visual>
-      <origin xyz=".05 0 0.04" rpy="0 0 0"/>
+      <origin xyz="0.02 0 0.02" rpy="0 0 0"/>
       <geometry>
-        <box size="0.01 0.02 0.08"/>
+        <box size="0.01 0.01 0.04"/>
       </geometry>
-      <material name="pink"/>
+      <material name="green"/>
     </visual>
   </link>
 
@@ -137,16 +141,16 @@
     <joint name ="joint_3_corrected" type="revolute">
         <parent link="shoulder_link"/>
         <child link = "elbow_link_corrected"/>
-        <origin xyz="0 0 0.08" rpy="${PI/2} 0 0"/>
+        <origin xyz="0 0 0.08" rpy="-${PI/2} 0 0"/>
         <axis xyz="1 0 0"/>
         <limit lower="-${PI / 2}" upper="${PI / 2}"
                effort="${effort}" velocity="${velocity}"/>
     </joint>
 
-<joint name ="joint_3_actual" type="revolute">
-        <parent link="shoulder_link"/>
+    <joint name ="joint_3" type="revolute">
+        <parent link="base_plate"/>
         <child link = "elbow_link_actual"/>
-        <origin xyz="0 0 0.08" rpy="${PI/2} 0 0"/>
+        <origin xyz="0 0 0.02" rpy="${PI/2} 0 0"/>
         <axis xyz="1 0 0"/>
         <limit lower="-${PI / 2}" upper="${PI / 2}"
                effort="${effort}" velocity="${velocity}"/>

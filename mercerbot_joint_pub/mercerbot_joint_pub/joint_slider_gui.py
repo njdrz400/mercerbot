@@ -11,7 +11,7 @@ class JointSliderGui(Node):
     def __init__(self):
         super().__init__("joint_slider_gui")
 
-        self.pub = self.create_publisher(JointState, "joint_commands", 10)
+        self.pub = self.create_publisher(JointState, "joint_states", 10)
 
         self.root = tk.Tk()
         self.root.title("Joint State GUI")
@@ -73,7 +73,12 @@ class JointSliderGui(Node):
             msg.position.append(float(self.sliders[joint].get()))
 
         msg.name.append("joint_3_corrected")
-        msg.position.append(float(self.sliders["joint_3"].get()) + float(self.sliders["joint_2"].get()))
+        msg.position.append(float(self.sliders["joint_3"].get()) - float(self.sliders["joint_2"].get()))
+        #self.get_logger().debug("Publishing joint_3_corrected: {:.2f}".format(float(self.sliders["joint_2"].get())))
+        print(self.sliders["joint_3"].get(),self.sliders["joint_2"].get())
+        msg.name.append("joint_claw_support_corrected")
+        msg.position.append(3.14/2.0-float(self.sliders["joint_3"].get()))
+
 
         self.pub.publish(msg)
 
