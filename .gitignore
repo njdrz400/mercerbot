@@ -1,0 +1,76 @@
+############################
+# ROS2 / Colcon Build Files
+############################
+
+build/
+install/
+log/
+
+# Old ROS1 Catkin (optional; safe to include)
+devel/
+catkin_ws/build/
+catkin_ws/devel/
+
+############################
+# Python Bytecode
+############################
+
+*.pyc
+__pycache__/
+
+# Python packaging files
+*.egg-info/
+*.egg
+dist/
+pip-wheel-metadata/
+
+############################
+# Editor / IDE Files
+############################
+
+.vscode/
+.idea/
+.clangd/
+compile_commands.json
+*.swp
+*.swo
+
+############################
+# CMake / Colcon Artifacts
+############################
+
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles/
+CTestTestfile.cmake
+cmake_install.cmake
+ament_cmake_core/
+ament_cmake_environment_hooks/
+ament_cmake_index/
+
+############################
+# Launch / Runtime
+############################
+
+*.launch~
+*.pyc
+*.log
+*.bak
+
+############################
+# URDF / Mesh tools
+############################
+
+*.dae~
+*.stl~
+*~  # temp editor files
+
+############################
+# Misc
+############################
+
+*.DS_Store
+Thumbs.db
+
+# JetBrains cmake cache
+cmake-build-*/
