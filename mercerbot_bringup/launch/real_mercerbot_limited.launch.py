@@ -106,22 +106,15 @@ def generate_launch_description():
     )
 
     # 5) Optional GUI + slider control
-    # joint_state_publisher_gui_node = Node(
-    #     package="joint_state_publisher_gui",
-    #     executable="joint_state_publisher_gui",
-    #     remappings=[
-    #         ("/joint_states", "/joint_commands"),
-    #     ],
-    #     output="screen",
-    # )
-
-    slider_control_node = Node(
-        package="arduinobot_controller",
-        executable="slider_control",
+    joint_state_publisher_gui_node = Node(
+        package="joint_state_publisher_gui",
+        executable="joint_state_publisher_gui",
+        remappings=[
+            ("/joint_states", "/joint_commands"),
+        ],
         output="screen",
     )
 
-   
 
     rviz_config_file = os.path.join(
         get_package_share_directory("mercerbot_description"),
@@ -138,12 +131,7 @@ def generate_launch_description():
         arguments=["-d", rviz_config_file],                        # RViz config
     )
 
-    rqt_node = Node(
-        package="rqt_gui",
-        executable="rqt_gui",
-        name="rqt",
-        output="screen",
-    )
+    
 
     return LaunchDescription([
         # NOTE: robot_description is NOT listed here
@@ -152,8 +140,7 @@ def generate_launch_description():
         joint_state_broadcaster_spawner,
         arm_controller_spawner,
         gripper_controller_spawner,
-        slider_control_node,
-        #joint_state_publisher_gui_node,
-        rqt_node,
+        joint_state_publisher_gui_node,
+       
         rviz_node,
     ])

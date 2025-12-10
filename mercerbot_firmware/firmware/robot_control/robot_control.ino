@@ -12,6 +12,9 @@
 #define ELBOW_START 90
 #define GRIPPER_START 0
 
+// LED pin
+#define LED_PIN 13
+
 // Register the servo motors of each joint
 Servo base;  
 Servo shoulder;  
@@ -22,22 +25,21 @@ uint8_t idx = 0;
 uint8_t val_idx = 0;
 char value[4] = "000";
 
+// Blink timer variables
+unsigned long lastBlink = 0;
+bool ledState = false;
 
 /*
- * This function moves a given servo smoothly from a given start position to a given end position.
- * The movement can be both clockwise or counterclockwise based on the values assigned to
- * the start position and end position
+ * Move a servo smoothly to the target angle.
  */
 void reach_goal(Servo& motor, int goal){
-  if(goal>=motor.read()){
-    // goes from the start point degrees to the end point degrees
-    for (int pos = motor.read(); pos <= goal; pos += 1) { 
+  if(goal >= motor.read()){
+    for (int pos = motor.read(); pos <= goal; pos++) { 
       motor.write(pos);     
       delay(15);                       
     }
-  } else{
-    // goes from the end point degrees to the start point degrees
-    for (int pos = motor.read(); pos >= goal; pos -= 1) { 
+  } else {
+    for (int pos = motor.read(); pos >= goal; pos--) { 
       motor.write(pos);     
       delay(15);                       
     }
@@ -45,85 +47,79 @@ void reach_goal(Servo& motor, int goal){
 }
 
 void setup() {
-  // Attach and Initialize each Servo to the Arduino pin where it is connected
+  // Attach servos
   base.attach(SERVO_BASE_PIN);
   shoulder.attach(SERVO_SHOULDER_PIN);
   elbow.attach(SERVO_ELBOW_PIN);
-  gripper.attach(SERVO_GRIPPER_PIN); 
+  gripper.attach(SERVO_GRIPPER_PIN);
 
-  // Set a common start point for each joint
-  // This way, the start status of each joint is known
+  // Initialize servo positions
   base.write(BASE_START);
   shoulder.write(SHOULDER_START);
   elbow.write(ELBOW_START);
   gripper.write(GRIPPER_START);
 
-  // Start the Serial communication with ROS
+  // Start Serial
   Serial.begin(115200);
   Serial.setTimeout(1);
+
+  // Init LED pin
+  pinMode(LED_PIN, OUTPUT);
 }
 
 void loop() {
+
+  // -------------------------
+  // 1-Second LED Blink
+  // -------------------------
+  unsigned long now = millis();
+  if (now - lastBlink >= 1000) {   // One second passed
+    ledState = !ledState;          // Toggle LED
+    digitalWrite(LED_PIN, ledState);
+    lastBlink = now;
+  }
+
+  // -------------------------
+  // Serial Parsing for Servos
+  // -------------------------
   if (Serial.available())
   {
     char chr = Serial.read();
 
     // base motor
-    if(chr == 'b')
-    {
-      idx = 0;
-      val_idx = 0;
-    }
+    if(chr == 'b') { idx = 0; val_idx = 0; }
+
     // shoulder motor
-    else if(chr == 's')
-    {
-      idx = 1;
-      val_idx = 0;
-    }
+    else if(chr == 's') { idx = 1; val_idx = 0; }
+
     // elbow motor
-    else if(chr == 'e')
-    {
-      idx = 2;
-      val_idx = 0;
-    }
+    else if(chr == 'e') { idx = 2; val_idx = 0; }
+
     // gripper motor
-    else if(chr == 'g')
-    {
-      idx = 3;
-      val_idx = 0;
-    }
-    // Separator
+    else if(chr == 'g') { idx = 3; val_idx = 0; }
+
+    // Separator between command and number
     else if(chr == ',')
     {
       int val = atoi(value);
-      if(idx == 0)
-      {
-        reach_goal(base, val);
-      }
-      else if(idx == 1)
-      {
-        reach_goal(shoulder, val);
-      }
-      else if(idx == 2)
-      {
-        reach_goal(elbow, val);
-      }
-      else if(idx == 3)
-      {
-        reach_goal(gripper, val);
-      }
+      if(idx == 0) reach_goal(base, val);
+      else if(idx == 1) reach_goal(shoulder, val);
+      else if(idx == 2) reach_goal(elbow, val);
+      else if(idx == 3) reach_goal(gripper, val);
 
-      // reset the angle
+      // Reset buffer
       value[0] = '0';
       value[1] = '0';
       value[2] = '0';
       value[3] = '\0';
     }
-    // Plain number
+
+    // Numeric digits
     else
     {
       value[val_idx] = chr;
       val_idx++;
+      if (val_idx > 2) val_idx = 2;  // prevent overflow
     }
   }
 }

@@ -32,18 +32,9 @@ def generate_launch_description():
         package="robot_state_publisher",
         executable="robot_state_publisher",
         parameters=[{"robot_description": robot_description}],
+        remappings=[("joint_states", "joint_states_corrected")],
         output="screen",
     )
-
-    # 5) Optional GUI + slider control
-    joint_state_publisher_gui_node = Node(
-         package="joint_state_publisher_gui",
-         executable="joint_state_publisher_gui",
-         #remappings=[
-         #    ("/joint_states", "/joint_commands"),
-         #],
-         output="screen",
-     )
     rviz_config_file = os.path.join(
         get_package_share_directory("mercerbot_description"),
         "rviz",
@@ -58,11 +49,71 @@ def generate_launch_description():
        
         arguments=["-d", rviz_config_file],                        # RViz config
     )
- 
+  # 3) ros2_control controller manager
+    controller_manager = Node(
+        package="controller_manager",
+        executable="ros2_control_node",
+        parameters=[
+            {
+                "robot_description": robot_description,
+                "use_sim_time": False,
+            },
+            os.path.join(
+                get_package_share_directory("mercerbot_controller"),
+                "config",
+                "mercerbot_controllers.yaml",
+            ),
+        ],
+        output="screen",
+    )
+
+    #4) Spawners (delayed so controller_manager is ready)
+    joint_state_broadcaster_spawner = TimerAction(
+        period=2.0,
+        actions=[
+            Node(
+                package="controller_manager",
+                executable="spawner",
+                arguments=[
+                    "joint_state_broadcaster",
+                    "--controller-manager",
+                    "/controller_manager",
+                ],
+                output="screen",
+            )
+        ],
+    )
+
+    arm_controller_spawner = TimerAction(
+        period=3.0,
+        actions=[
+            Node(
+                package="controller_manager",
+                executable="spawner",
+                arguments=[
+                    "arm_controller",
+                    "--controller-manager",
+                    "/controller_manager",
+                ],
+                output="screen",
+            )
+        ],
+    )
+
+    slider_control_node = Node(
+        package="arduinobot_controller",
+        executable="slider_control"
+    )
+
+
     return LaunchDescription([
         # NOTE: robot_description is NOT listed here
         robot_state_publisher_node,
         rviz_node,
-        #slider_control_node,
-        joint_state_publisher_gui_node,
+        slider_control_node,
+     
+        controller_manager,
+        joint_state_broadcaster_spawner,
+        arm_controller_spawner,
+       
     ])
