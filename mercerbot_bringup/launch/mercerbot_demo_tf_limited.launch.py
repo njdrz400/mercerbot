@@ -101,19 +101,28 @@ def generate_launch_description():
     )
 
     slider_control_node = Node(
-        package="arduinobot_controller",
+        package="mercerbot_controller",
         executable="slider_control"
     )
 
+    joint_states_corrected_node = Node(
+        package="mercerbot_joint_states_corrected",
+        executable="joint_states_corrected_node"
+    ) 
+    mercerbot_joint_pub_node= Node(
+        package="mercerbot_joint_pub",
+        executable="joint_slider_gui"
+    )
 
     return LaunchDescription([
         # NOTE: robot_description is NOT listed here
         robot_state_publisher_node,
         rviz_node,
         slider_control_node,
-     
+        joint_states_corrected_node,
         controller_manager,
         joint_state_broadcaster_spawner,
         arm_controller_spawner,
+        mercerbot_joint_pub_node,
        
     ])
