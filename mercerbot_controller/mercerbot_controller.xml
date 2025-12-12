@@ -1,10 +1,10 @@
-<library path="arduinobot_controller">
-    <class name="arduinobot_controller/ArduinobotInterface"
-      type="arduinobot_controller::ArduinobotInterface"
+<library path="mercerbot_controller">
+    <class name="mercerbot_controller/MercerbotInterface"
+      type="mercerbot_controller::MercerbotInterface"
       base_class_type="hardware_interface::SystemInterface"
     >
       <description>
-        Arduinobot Hardware Interface
+        Mercerbot Hardware Interface
       </description>
     </class>
   </library>
