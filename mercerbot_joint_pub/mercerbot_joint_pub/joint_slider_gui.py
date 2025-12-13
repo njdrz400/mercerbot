@@ -38,6 +38,7 @@ class JointSliderGui(Node):
             # Special range for joint_4: [-pi/2, 0]
             if joint == "joint_4":
                 to_val = 0.0
+                from_val = -math.pi / 2.0
 
             slider = tk.Scale(
                 frame,

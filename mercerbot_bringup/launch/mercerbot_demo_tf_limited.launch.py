@@ -100,6 +100,22 @@ def generate_launch_description():
         ],
     )
 
+    gripper_controller_spawner = TimerAction(
+        period=4.0,
+        actions=[
+            Node(
+                package="controller_manager",
+                executable="spawner",
+                arguments=[
+                    "gripper_controller",
+                    "--controller-manager",
+                    "/controller_manager",
+                ],
+                output="screen",
+            )
+        ],
+    )
+
     slider_control_node = Node(
         package="mercerbot_controller",
         executable="slider_control"
@@ -123,6 +139,7 @@ def generate_launch_description():
         controller_manager,
         joint_state_broadcaster_spawner,
         arm_controller_spawner,
+        gripper_controller_spawner,
         mercerbot_joint_pub_node,
        
     ])

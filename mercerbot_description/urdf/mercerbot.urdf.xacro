@@ -79,9 +79,9 @@
 
    <link name="claw_support">
       <visual>
-          <origin rpy="0 1.57 0" xyz="0 0 0"/>
+          <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-              <box size="0.01 0.02 0.03"/>
+              <box size="0.01 0.02 0.01"/>
           </geometry>
         <material name="white"/>
       </visual>
@@ -90,9 +90,9 @@
     <link name="gripper_right">
           
           <visual>
-              <origin rpy="0 0 0" xyz="0 0 0"/>
+              <origin rpy="${PI/2} 0 0" xyz="0 0 0"/>
               <geometry>
-                  <box size="0.005 0.005 0.03"/>
+                  <box size="0.005 0.005 0.015"/>
               </geometry>
               <material name="red"/>
           </visual>
@@ -102,9 +102,9 @@
       <link name="gripper_left">
           
           <visual>
-              <origin rpy="0 0 0" xyz="0 0 0"/>
+              <origin rpy="${PI/2} 0 0" xyz="0 0 0"/>
               <geometry>
-                  <box size="0.005 0.005 0.03"/>
+                  <box size="0.005 0.005 0.015"/>
               </geometry>
               <material name="green"/>
           </visual>
@@ -159,7 +159,7 @@
     <joint name ="joint_claw_support_corrected" type="revolute">
         <parent link="elbow_link_corrected"/>
         <child link = "claw_support"/>
-        <origin xyz="0 0.0 0.08"/>
+        <origin xyz="0 0.01 0.09" rpy="${PI} 0 0"/>
         <axis xyz="1 0 0"/>
         <limit lower="-${PI / 2}" upper="${PI / 2}"
                effort="${effort}" velocity="${velocity}"/>
@@ -167,7 +167,7 @@
     <joint name ="joint_4" type="revolute">
           <parent link="claw_support"/>
           <child link = "gripper_right"/>
-          <origin xyz="-0.0125 -0.005 0.02"/>
+          <origin xyz="-0.005 -0.01 0.005" rpy="0 0 0"/>
           <axis xyz="0 0 1"/>
           <limit lower="-${PI / 2}" upper="0.0" 
                 effort="${effort}" velocity="${velocity}"/>
@@ -175,9 +175,10 @@
       <joint name ="joint_5" type="revolute">
           <parent link="claw_support"/>
           <child link = "gripper_left"/>
-          <origin xyz="0.0125 -0.005 0.02"/>
+          <origin xyz="0.005 -0.01 0.005" rpy="0 0 0"/>
           <axis xyz="0 0 1"/>
-          <limit lower="-${PI / 2}" upper="0.0" 
+          <limit lower="0.0" upper="${PI / 2}" 
                 effort="${effort}" velocity="${velocity}"/>
+          <mimic joint="joint_4" multiplier="-1.0" offset="0.0"/>
       </joint>
 </robot>

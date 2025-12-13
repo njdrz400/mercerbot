@@ -48,9 +48,9 @@ def generate_launch_description():
                 "use_sim_time": False,
             },
             os.path.join(
-                get_package_share_directory("arduinobot_controller"),
+                get_package_share_directory("mercerbot_controller"),
                 "config",
-                "arduinobot_controllers.yaml",
+                "mercerbot_controllers.yaml",
             ),
         ],
         output="screen",
